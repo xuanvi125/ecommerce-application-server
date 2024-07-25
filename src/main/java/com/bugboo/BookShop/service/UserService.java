@@ -7,6 +7,8 @@ import com.bugboo.BookShop.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
+
 @Service
 public class UserService {
     private final UserRepository userRepository;
@@ -45,6 +47,9 @@ public class UserService {
         responseUserDTO.setAvatar(user.getAvatar());
         responseUserDTO.setRole(user.getRole());
         return responseUserDTO;
+    }
+    public User findByResetPasswordTokenAndResetPasswordTokenExpiresAfter(String resetToken, Instant resetTokenExpires) {
+        return userRepository.findByResetPasswordTokenAndResetPasswordTokenExpiresAfter(resetToken, resetTokenExpires);
     }
 
 }

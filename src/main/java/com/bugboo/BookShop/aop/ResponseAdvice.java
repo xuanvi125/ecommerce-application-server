@@ -1,6 +1,7 @@
 package com.bugboo.BookShop.aop;
 
 import com.bugboo.BookShop.type.annotation.ApiMessage;
+import com.bugboo.BookShop.type.apiResponse.ErrorApiResponse;
 import com.bugboo.BookShop.type.apiResponse.SuccessfulApiResponse;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.core.MethodParameter;

@@ -6,6 +6,7 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
+import java.time.Instant;
 import java.util.List;
 
 @Data
@@ -39,4 +40,12 @@ public class User {
     @Column(name = "refresh_token",columnDefinition = "MEDIUMTEXT")
     @JsonIgnore
     private String refreshToken;
+
+    @Column(name = "reset_password_token",columnDefinition = "MEDIUMTEXT")
+    @JsonIgnore
+    private String resetPasswordToken;
+
+    @Column(name = "reset_password_token_expires")
+    @JsonIgnore
+    private Instant resetPasswordTokenExpires;
 }

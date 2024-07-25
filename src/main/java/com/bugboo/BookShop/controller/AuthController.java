@@ -3,23 +3,35 @@ package com.bugboo.BookShop.controller;
 import com.bugboo.BookShop.domain.User;
 import com.bugboo.BookShop.domain.dto.request.RequestLoginDTO;
 import com.bugboo.BookShop.domain.dto.request.RequestRegisterDTO;
+import com.bugboo.BookShop.domain.dto.request.RequestResetPasswordDTO;
 import com.bugboo.BookShop.domain.dto.response.ResponseLoginDTO;
 import com.bugboo.BookShop.domain.dto.response.ResponseUserDTO;
 import com.bugboo.BookShop.service.AuthService;
+import com.bugboo.BookShop.service.SendEmailService;
+import com.bugboo.BookShop.service.TokenService;
 import com.bugboo.BookShop.service.UserService;
 import com.bugboo.BookShop.type.annotation.ApiMessage;
 import com.bugboo.BookShop.type.exception.AppException;
 import com.bugboo.BookShop.utils.JwtUtils;
+import jakarta.mail.MessagingException;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
+
+import java.security.NoSuchAlgorithmException;
+import java.time.Instant;
+import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -27,15 +39,19 @@ public class AuthController {
     private final AuthService authService;
     private final JwtUtils jwtUtils;
     private final UserService userService;
+    private final SendEmailService sendEmailService;
+    private final PasswordEncoder passwordEncoder;
 
     @Value("${jwt.refresh_token.expiration}")
     private Long refreshTokenExpiration;
 
     @Autowired
-    public AuthController(AuthService authService, JwtUtils jwtUtils, UserService userService) {
+    public AuthController(AuthService authService, JwtUtils jwtUtils, UserService userService, SendEmailService sendEmailService, PasswordEncoder passwordEncoder) {
         this.authService = authService;
         this.jwtUtils = jwtUtils;
         this.userService = userService;
+        this.sendEmailService = sendEmailService;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @PostMapping("/register")
@@ -74,8 +90,8 @@ public class AuthController {
         return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE,cookie.toString()).body(responseLoginDTO);
     }
 
-    @GetMapping("/logout")
     @ApiMessage("User logged out successfully")
+    @GetMapping("/logout")
     public ResponseEntity<Object> logout(){
         String email = jwtUtils.getCurrentUserLogin();
         User currentUser = userService.findByEmail(email);
@@ -92,7 +108,7 @@ public class AuthController {
                 .path("/")
                 .maxAge(0)
                 .build();
-        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie.toString()).body(null);
+        return ResponseEntity.status(HttpStatus.OK).header(HttpHeaders.SET_COOKIE, cookie.toString()).body(Optional.empty());
     }
     @GetMapping("/refresh")
     @ApiMessage("get user by refresh token")
@@ -127,6 +143,55 @@ public class AuthController {
         return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie.toString()).body(responseLoginDTO);
     }
 
+    @PostMapping("/forgot-password")
+    @ApiMessage("Send email to reset password successfully")
+    public ResponseEntity<?> handleForgotPassword(@RequestBody Map<String,String> body, HttpServletRequest request) throws MessagingException, NoSuchAlgorithmException {
+        String email = body.get("email");
+        if (body.get("email") == null){
+            throw new AppException("Email is required",400);
+        }
+        User user = userService.findByEmail(email);
+        if(user == null){
+            throw new AppException("User with this email not found",400);
+        }
+        // create reset password token + save to database
+        String resetPasswordToken = TokenService.generateResetPasswordToken();
+        String hashedToken = TokenService.hashToken(resetPasswordToken);
+        user.setResetPasswordToken(hashedToken);
+        user.setResetPasswordTokenExpires(TokenService.generateResetPasswordTokenExpires());
+        userService.save(user);
+        // send email to user
 
+        String scheme = request.getScheme();             // http
+        String serverName = request.getServerName();     // localhost
+        int serverPort = request.getServerPort();        // 8080
+
+
+        // Construct base URL
+        String baseUrl = scheme + "://" + serverName + ":" + serverPort;
+        String url = baseUrl + "/api/v1/auth/reset-password?token=" + resetPasswordToken;
+        Map<String,String> data = Map.of("link",url,
+                "name",user.getName());
+        this.sendEmailService.sendEmailWithThymeleafTemplate(email,"Reset Password",data);
+        return ResponseEntity.ok().body(data);
+    }
+
+    @PostMapping("/reset-password")
+    @ApiMessage("Reset password successfully")
+    public ResponseEntity<?> handleResetPassword(@RequestParam String token, @RequestBody RequestResetPasswordDTO requestResetPasswordDTO) throws NoSuchAlgorithmException {
+        if(!requestResetPasswordDTO.isPasswordMatch()){
+            throw new AppException("Password not match",400);
+        }
+        String hashedToken = TokenService.hashToken(token);
+        User user = userService.findByResetPasswordTokenAndResetPasswordTokenExpiresAfter(hashedToken, Instant.now());
+        if(user == null){
+            throw new AppException("Token is invalid or expired",400);
+        }
+        user.setPassword(passwordEncoder.encode(requestResetPasswordDTO.getPassword()));
+        user.setResetPasswordToken(null);
+        user.setResetPasswordTokenExpires(null);
+        userService.save(user);
+        return ResponseEntity.ok().body(Optional.empty());
+    }
 
 }
