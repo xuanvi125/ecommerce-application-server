@@ -31,4 +31,12 @@ public class User {
     @OneToMany(mappedBy = "user")
     @JsonIgnore
     private List<Review> reviews;
+
+    @ManyToOne
+    @JoinColumn(name = "role_id")
+    private Role role;
+
+    @Column(name = "refresh_token",columnDefinition = "MEDIUMTEXT")
+    @JsonIgnore
+    private String refreshToken;
 }
