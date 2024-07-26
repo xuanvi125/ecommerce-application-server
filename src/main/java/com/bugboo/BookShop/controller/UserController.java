@@ -1,11 +1,14 @@
 package com.bugboo.BookShop.controller;
 
+import com.bugboo.BookShop.domain.Order;
 import com.bugboo.BookShop.domain.User;
+import com.bugboo.BookShop.domain.dto.request.RequestCheckOutDTO;
 import com.bugboo.BookShop.domain.dto.request.RequestUpdatePasswordDTO;
 import com.bugboo.BookShop.domain.dto.request.RequestUpdateProfileDTO;
 import com.bugboo.BookShop.domain.dto.response.ResponseLoginDTO;
 import com.bugboo.BookShop.domain.dto.response.ResponseUserDTO;
 import com.bugboo.BookShop.service.FileUploadService;
+import com.bugboo.BookShop.service.OrderService;
 import com.bugboo.BookShop.service.UserService;
 import com.bugboo.BookShop.type.annotation.ApiMessage;
 import com.bugboo.BookShop.type.exception.AppException;
@@ -20,6 +23,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/users")
@@ -28,12 +33,14 @@ public class UserController {
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
     private final FileUploadService fileUploadService;
+    private final OrderService orderService;
     @Autowired
-    public UserController(JwtUtils jwtUtils, UserService userService, PasswordEncoder passwordEncoder, FileUploadService fileUploadService) {
+    public UserController(JwtUtils jwtUtils, UserService userService, PasswordEncoder passwordEncoder, FileUploadService fileUploadService, OrderService orderService) {
         this.jwtUtils = jwtUtils;
         this.userService = userService;
         this.passwordEncoder = passwordEncoder;
         this.fileUploadService = fileUploadService;
+        this.orderService = orderService;
     }
 
     @PostMapping("/update-password")
@@ -79,5 +86,21 @@ public class UserController {
             currentUser.setName(request.getName());
         }
         return ResponseEntity.ok(userService.convertToResponseUserDTO(currentUser));
+    }
+
+    @GetMapping("/orders")
+    @ApiMessage("Get orders successfully")
+    public ResponseEntity<List<Order>> handleGetOrders(){
+        String email = this.jwtUtils.getCurrentUserLogin();
+        User currentUser = userService.findByEmail(email);
+        return ResponseEntity.ok(currentUser.getOrders());
+    }
+
+    @PostMapping("/checkout")
+    @ApiMessage("Checkout successfully")
+    public ResponseEntity<Order> handleCheckout(@RequestBody RequestCheckOutDTO requestCheckOutDTO){
+        String email = this.jwtUtils.getCurrentUserLogin();
+        User currentUser = userService.findByEmail(email);
+        return ResponseEntity.ok(orderService.checkout(currentUser,requestCheckOutDTO));
     }
 }

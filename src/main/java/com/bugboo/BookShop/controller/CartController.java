@@ -1,7 +1,6 @@
 package com.bugboo.BookShop.controller;
 
 import com.bugboo.BookShop.domain.Cart;
-import com.bugboo.BookShop.domain.CartDetails;
 import com.bugboo.BookShop.domain.dto.request.RequestAddCartItemDTO;
 import com.bugboo.BookShop.service.CartService;
 import com.bugboo.BookShop.type.annotation.ApiMessage;

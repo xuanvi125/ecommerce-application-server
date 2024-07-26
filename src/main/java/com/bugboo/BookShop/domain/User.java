@@ -1,6 +1,7 @@
 package com.bugboo.BookShop.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
@@ -48,4 +49,8 @@ public class User {
     @Column(name = "reset_password_token_expires")
     @JsonIgnore
     private Instant resetPasswordTokenExpires;
+
+    @OneToMany(mappedBy = "user")
+    @JsonIgnoreProperties({"user"})
+    private List<Order> orders;
 }

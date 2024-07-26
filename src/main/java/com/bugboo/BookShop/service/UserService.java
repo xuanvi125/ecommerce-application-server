@@ -1,9 +1,12 @@
 package com.bugboo.BookShop.service;
 
+import com.bugboo.BookShop.domain.Order;
 import com.bugboo.BookShop.domain.User;
+import com.bugboo.BookShop.domain.dto.request.RequestCheckOutDTO;
 import com.bugboo.BookShop.domain.dto.request.RequestRegisterDTO;
 import com.bugboo.BookShop.domain.dto.response.ResponseUserDTO;
 import com.bugboo.BookShop.repository.UserRepository;
+import com.bugboo.BookShop.utils.JwtUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,10 +15,14 @@ import java.time.Instant;
 @Service
 public class UserService {
     private final UserRepository userRepository;
+    private final OrderService orderService;
+    private final JwtUtils jwtUtils;
 
     @Autowired
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, OrderService orderService, JwtUtils jwtUtils) {
         this.userRepository = userRepository;
+        this.orderService = orderService;
+        this.jwtUtils = jwtUtils;
     }
 
     public User save(User user) {
@@ -51,5 +58,6 @@ public class UserService {
     public User findByResetPasswordTokenAndResetPasswordTokenExpiresAfter(String resetToken, Instant resetTokenExpires) {
         return userRepository.findByResetPasswordTokenAndResetPasswordTokenExpiresAfter(resetToken, resetTokenExpires);
     }
+
 
 }

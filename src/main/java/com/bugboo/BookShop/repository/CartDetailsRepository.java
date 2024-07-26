@@ -8,4 +8,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface CartDetailsRepository extends JpaRepository<CartDetails, Integer> {
     CartDetails findByCartAndProduct(Cart cart, Book book);
     CartDetails findByIdAndCart(int id, Cart cart);
+
+    void deleteByCart(Cart cart);
 }

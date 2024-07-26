@@ -75,4 +75,14 @@ public class CartService {
         cart.setSum(cart.getSum() - 1);
         return cartRepository.save(cart);
     }
+
+    public void empty(Cart cart) {
+        cartDetailsService.deleteByCart(cart);
+        cart.setSum(0);
+        cartRepository.save(cart);
+    }
+
+    public Cart findCartByUser(User currentUser) {
+        return cartRepository.findByUser(currentUser);
+    }
 }

@@ -34,4 +34,10 @@ public class CartDetailsService {
     public CartDetails findByIdAndCart(int id, Cart cart) {
         return cartDetailsRepository.findByIdAndCart(id, cart);
     }
+
+    public void deleteByCart(Cart cart) {
+        cartDetailsRepository.deleteByCart(cart);
+    }
+
+
 }
