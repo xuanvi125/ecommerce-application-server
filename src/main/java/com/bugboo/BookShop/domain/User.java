@@ -52,5 +52,10 @@ public class User {
 
     @OneToMany(mappedBy = "user")
     @JsonIgnoreProperties({"user"})
+    @JsonIgnore
     private List<Order> orders;
+
+    @OneToMany(mappedBy = "user")
+    @JsonIgnore
+    private List<BankAccount> bankAccounts;
 }

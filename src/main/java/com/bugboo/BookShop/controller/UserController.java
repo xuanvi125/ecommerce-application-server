@@ -98,7 +98,7 @@ public class UserController {
 
     @PostMapping("/checkout")
     @ApiMessage("Checkout successfully")
-    public ResponseEntity<Order> handleCheckout(@RequestBody RequestCheckOutDTO requestCheckOutDTO){
+    public ResponseEntity<Order> handleCheckout(@Valid @RequestBody RequestCheckOutDTO requestCheckOutDTO){
         String email = this.jwtUtils.getCurrentUserLogin();
         User currentUser = userService.findByEmail(email);
         return ResponseEntity.ok(orderService.checkout(currentUser,requestCheckOutDTO));
