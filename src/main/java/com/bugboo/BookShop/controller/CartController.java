@@ -2,6 +2,7 @@ package com.bugboo.BookShop.controller;
 
 import com.bugboo.BookShop.domain.Cart;
 import com.bugboo.BookShop.domain.dto.request.RequestAddCartItemDTO;
+import com.bugboo.BookShop.domain.dto.request.RequestUpdateCartDTO;
 import com.bugboo.BookShop.service.CartService;
 import com.bugboo.BookShop.type.annotation.ApiMessage;
 import jakarta.validation.Valid;
@@ -44,5 +45,19 @@ public class CartController {
     public ResponseEntity<Cart> deleteCartItems(@PathVariable int id) {
         Cart cart = cartService.deleteCartItems(id);
         return ResponseEntity.status(HttpStatus.OK).body(cart);
+    }
+
+    @DeleteMapping
+    @ApiMessage("Delete all cart items successfully")
+    public ResponseEntity<Object> deleteAllCartItems() {
+        cartService.empty();
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(Optional.empty());
+    }
+
+    @PutMapping
+    @ApiMessage("Update cart items successfully")
+    public ResponseEntity<Cart> updateCartItems(@Valid @RequestBody RequestUpdateCartDTO requestUpdateCartDTO) {
+        Cart cart = cartService.updateCartItems(requestUpdateCartDTO);
+        return ResponseEntity.ok(cart);
     }
 }

@@ -5,9 +5,11 @@ import com.bugboo.BookShop.domain.Cart;
 import com.bugboo.BookShop.domain.CartDetails;
 import com.bugboo.BookShop.domain.User;
 import com.bugboo.BookShop.domain.dto.request.RequestAddCartItemDTO;
+import com.bugboo.BookShop.domain.dto.request.RequestUpdateCartDTO;
 import com.bugboo.BookShop.repository.CartRepository;
 import com.bugboo.BookShop.type.exception.AppException;
 import com.bugboo.BookShop.utils.JwtUtils;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -33,6 +35,9 @@ public class CartService {
     public Cart getCart() {
         String email = jwtUtils.getCurrentUserLogin();
         User currentUser = userService.findByEmail(email);
+        if (currentUser == null) {
+            throw new AppException("Please login to perform this action", 400);
+        }
         Cart cart = cartRepository.findByUser(currentUser);
         if (cart == null) {
             cart = new Cart();
@@ -76,7 +81,9 @@ public class CartService {
         return cartRepository.save(cart);
     }
 
-    public void empty(Cart cart) {
+    @Transactional
+    public void empty() {
+        Cart cart = this.getCart();
         cartDetailsService.deleteByCart(cart);
         cart.setSum(0);
         cartRepository.save(cart);
@@ -84,5 +91,16 @@ public class CartService {
 
     public Cart findCartByUser(User currentUser) {
         return cartRepository.findByUser(currentUser);
+    }
+
+
+    public Cart updateCartItems(RequestUpdateCartDTO requestUpdateCartDTO) {
+        Cart cart = this.getCart();
+        CartDetails cartDetails = cartDetailsService.findByIdAndCart(requestUpdateCartDTO.getId(), cart);
+        if (cartDetails == null) {
+            throw new AppException("Cart item not found or not belong to current user", 400);
+        }
+        cartDetails.setQuantity(requestUpdateCartDTO.getQuantity());
+        return cartRepository.save(cart);
     }
 }
