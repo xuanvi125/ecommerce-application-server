@@ -11,6 +11,7 @@ import com.bugboo.BookShop.service.SendEmailService;
 import com.bugboo.BookShop.service.TokenService;
 import com.bugboo.BookShop.service.UserService;
 import com.bugboo.BookShop.type.annotation.ApiMessage;
+import com.bugboo.BookShop.type.constant.ConfigUtils;
 import com.bugboo.BookShop.type.exception.AppException;
 import com.bugboo.BookShop.utils.JwtUtils;
 import jakarta.mail.MessagingException;
@@ -162,14 +163,14 @@ public class AuthController {
         userService.save(user);
         // send email to user
 
-        String scheme = request.getScheme();             // http
-        String serverName = request.getServerName();     // localhost
-        int serverPort = request.getServerPort();        // 8080
+//        String scheme = request.getScheme();             // http
+//        String serverName = request.getServerName();     // localhost
+//        int serverPort = request.getServerPort();        // 8080
 
 
         // Construct base URL
-        String baseUrl = scheme + "://" + serverName + ":" + serverPort;
-        String url = baseUrl + "/api/v1/auth/reset-password?token=" + resetPasswordToken;
+        String baseUrl = ConfigUtils.CLIENT_URL;
+        String url = baseUrl + "/reset-password?token=" + resetPasswordToken;
         Map<String,String> data = Map.of("link",url,
                 "name",user.getName());
         this.sendEmailService.sendEmailWithThymeleafTemplate(email,"Reset Password",data);

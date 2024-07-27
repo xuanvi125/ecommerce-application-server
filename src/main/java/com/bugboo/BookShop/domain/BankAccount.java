@@ -24,7 +24,7 @@ public class BankAccount {
     private String accountName;
 
     @NotNull(message = "Balance is required")
-    private int balance = 0;
+    private int balance = 1000000;
 
     @ManyToOne
     @JoinColumn(name = "user_id")

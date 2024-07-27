@@ -85,6 +85,7 @@ public class UserController {
         if (request.getName() != null){
             currentUser.setName(request.getName());
         }
+        userService.save(currentUser);
         return ResponseEntity.ok(userService.convertToResponseUserDTO(currentUser));
     }
 
