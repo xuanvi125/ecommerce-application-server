@@ -10,4 +10,5 @@ public class ResponseUserDTO {
     private String name;
     private String avatar;
     private Role role;
+    private String googleId;
 }

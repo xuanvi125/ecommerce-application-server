@@ -59,4 +59,8 @@ public class User {
     @OneToMany(mappedBy = "user")
     @JsonIgnore
     private List<BankAccount> bankAccounts;
+
+    @Column(name = "google_id")
+    private String googleId;
+
 }

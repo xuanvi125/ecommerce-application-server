@@ -6,6 +6,7 @@ import com.bugboo.BookShop.domain.dto.request.RequestRegisterDTO;
 import com.bugboo.BookShop.domain.dto.request.RequestResetPasswordDTO;
 import com.bugboo.BookShop.domain.dto.response.ResponseLoginDTO;
 import com.bugboo.BookShop.domain.dto.response.ResponseUserDTO;
+import com.bugboo.BookShop.repository.RoleRepository;
 import com.bugboo.BookShop.service.AuthService;
 import com.bugboo.BookShop.service.SendEmailService;
 import com.bugboo.BookShop.service.TokenService;
@@ -15,7 +16,9 @@ import com.bugboo.BookShop.type.constant.ConfigUtils;
 import com.bugboo.BookShop.type.exception.AppException;
 import com.bugboo.BookShop.utils.JwtUtils;
 import jakarta.mail.MessagingException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,8 +28,13 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.NoSuchAlgorithmException;
@@ -37,6 +45,7 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/v1/auth")
 public class AuthController {
+
     private final AuthService authService;
     private final JwtUtils jwtUtils;
     private final UserService userService;
@@ -47,7 +56,7 @@ public class AuthController {
     private Long refreshTokenExpiration;
 
     @Autowired
-    public AuthController(AuthService authService, JwtUtils jwtUtils, UserService userService, SendEmailService sendEmailService, PasswordEncoder passwordEncoder) {
+    public AuthController( AuthService authService, JwtUtils jwtUtils, UserService userService, SendEmailService sendEmailService, PasswordEncoder passwordEncoder) {
         this.authService = authService;
         this.jwtUtils = jwtUtils;
         this.userService = userService;
@@ -194,5 +203,6 @@ public class AuthController {
         userService.save(user);
         return ResponseEntity.ok().body(Optional.empty());
     }
+
 
 }

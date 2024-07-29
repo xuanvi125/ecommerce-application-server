@@ -58,6 +58,7 @@ public class UserService {
         responseUserDTO.setName(user.getName());
         responseUserDTO.setAvatar(user.getAvatar());
         responseUserDTO.setRole(user.getRole());
+        responseUserDTO.setGoogleId(user.getGoogleId());
         return responseUserDTO;
     }
     public User findByResetPasswordTokenAndResetPasswordTokenExpiresAfter(String resetToken, Instant resetTokenExpires) {
@@ -73,5 +74,9 @@ public class UserService {
         User user = userRepository.findById(requestUpdateUserDTO.getId()).orElseThrow(() -> new AppException("User not found",400));
         user.setActive(requestUpdateUserDTO.isActive());
         return userRepository.save(user);
+    }
+
+    public User findByEmailOrGoogleId(String email, String googleId) {
+        return userRepository.findByEmailOrGoogleId(email, googleId);
     }
 }
