@@ -83,10 +83,20 @@ public class BankAccountService {
     }
 
     public BankAccount getBankAccountById(Long id) {
+        String email = jwtUtils.getCurrentUserLogin();
+        User user = userService.findByEmail(email);
+        if (user.getRole().getName().equals("ROLE_USER")) {
+            throw new AppException("You are not allowed to get bank account",403);
+        }
         return bankAccountRepository.findById(id).orElseThrow(() -> new AppException("Bank account not found",400));
     }
 
     public BankAccount updateBankAccount(RequestUpdateBankAccount requestUpdateBankAccount) {
+        String email = jwtUtils.getCurrentUserLogin();
+        User user = userService.findByEmail(email);
+        if (user.getRole().getName().equals("ROLE_USER")) {
+            throw new AppException("You are not allowed to update bank account",403);
+        }
         BankAccount bankAccount = bankAccountRepository.findById((long) requestUpdateBankAccount.getId()).orElseThrow(() -> new AppException("Bank account not found",400));
         bankAccount.setBalance(requestUpdateBankAccount.getBalance());
         return bankAccountRepository.save(bankAccount);

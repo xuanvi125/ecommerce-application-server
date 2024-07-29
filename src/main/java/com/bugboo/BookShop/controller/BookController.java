@@ -13,13 +13,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 
 @RestController
-@RequestMapping("/api/v1/books")
+@RequestMapping("/api/v1")
 public class BookController {
 
     private final BookService bookService;
@@ -33,21 +34,21 @@ public class BookController {
     //CRUD operations for book
     // get all books
     @ApiMessage("Get all books successfully")
-    @GetMapping
+    @GetMapping("/public/books")
     public ResponseEntity<ResponsePagingResultDTO> getAllBooks(@Filter Specification<Book> specification, Pageable pageable) {
         return ResponseEntity.ok(bookService.getAllBooks(specification,pageable));
     }
 
     // get book by id
     @ApiMessage("Get book by id successfully")
-    @GetMapping("/{id}")
+    @GetMapping("/public/{id}")
     public ResponseEntity<Book> getBookById(@PathVariable  int id) {
         return ResponseEntity.ok(bookService.getBookById(id));
     }
 
     // add book
     @ApiMessage("Add book successfully")
-    @PostMapping
+    @PostMapping("/admin/books")
     public ResponseEntity<Book> addBook(@Valid  Book book, @RequestParam(name = "file",required = false ) MultipartFile file) throws IOException {
         if(file != null){
             book.setImage(fileUploadService.uploadSingleFile(file,"books").get("url").toString());
@@ -56,7 +57,7 @@ public class BookController {
     }
 
     // update book
-    @PutMapping
+    @PutMapping("/admin/books")
     @ApiMessage("Update book successfully")
     public ResponseEntity<Book> updateBook(@Valid Book book, @RequestParam(name = "file", required = false) MultipartFile file) throws IOException {
         if(file != null){
@@ -66,7 +67,7 @@ public class BookController {
     }
 
     // delete book
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/admin/books/{id}")
     @ApiMessage("Delete book successfully")
     public ResponseEntity<Book> deleteBook(@PathVariable  int id) {
         bookService.deleteBook(id);

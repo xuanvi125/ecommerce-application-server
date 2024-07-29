@@ -22,17 +22,15 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
 @RestController
-@RequestMapping("/api/v1/users")
+@RequestMapping("/api/v1")
 public class UserController {
     private final JwtUtils jwtUtils;
     private final UserService userService;
@@ -48,7 +46,7 @@ public class UserController {
         this.orderService = orderService;
     }
 
-    @PostMapping("/update-password")
+    @PostMapping("/users/update-password")
     @ApiMessage("Update password successfully")
     public ResponseEntity<ResponseLoginDTO> handleUpdatePassword(@Valid @RequestBody RequestUpdatePasswordDTO requestUpdatePasswordDTO){
         if (!requestUpdatePasswordDTO.isPasswordMatch()){
@@ -79,7 +77,7 @@ public class UserController {
         return ResponseEntity.ok(userService.convertToResponseUserDTO(currentUser));
     }
 
-    @PostMapping("update-profile")
+    @PostMapping("/users/update-profile")
     @ApiMessage("Update profile successfully")
     public ResponseEntity<ResponseUserDTO> handleUpdateProfile(@Valid RequestUpdateProfileDTO request, @RequestParam(name = "file",required = false) MultipartFile file) throws IOException {
         String email = this.jwtUtils.getCurrentUserLogin();
@@ -94,7 +92,7 @@ public class UserController {
         return ResponseEntity.ok(userService.convertToResponseUserDTO(currentUser));
     }
 
-    @GetMapping("/orders")
+    @GetMapping("/users/orders")
     @ApiMessage("Get orders successfully")
     public ResponseEntity<List<Order>> handleGetOrders(){
         String email = this.jwtUtils.getCurrentUserLogin();
@@ -102,7 +100,7 @@ public class UserController {
         return ResponseEntity.ok(currentUser.getOrders());
     }
 
-    @PostMapping("/checkout")
+    @PostMapping("/users/checkout")
     @ApiMessage("Checkout successfully")
     public ResponseEntity<Order> handleCheckout(@Valid @RequestBody RequestCheckOutDTO requestCheckOutDTO){
         String email = this.jwtUtils.getCurrentUserLogin();
@@ -110,7 +108,7 @@ public class UserController {
         return ResponseEntity.ok(orderService.checkout(currentUser,requestCheckOutDTO));
     }
 
-    @GetMapping
+    @GetMapping("/admin/users")
     @ApiMessage("Get all users successfully")
     public ResponseEntity<ResponsePagingResultDTO> getAllUsers(Pageable pageable) {
         Page<User> users = userService.getAllUsers(pageable);
@@ -123,7 +121,7 @@ public class UserController {
         responsePagingResultDTO.setResult(users.getContent());
         return ResponseEntity.ok(responsePagingResultDTO);
     }
-    @PutMapping
+    @PutMapping("/admin/users")
     @ApiMessage("Update user successfully")
     public ResponseEntity<User> updateUser(@Valid @RequestBody RequestUpdateUserDTO requestUpdateUserDTO){
         return ResponseEntity.ok(userService.handleUpdateUser(requestUpdateUserDTO));

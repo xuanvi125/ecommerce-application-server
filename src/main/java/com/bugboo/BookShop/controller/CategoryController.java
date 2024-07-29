@@ -13,7 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/categories")
+@RequestMapping("/api/v1")
 public class CategoryController {
     private final CategoryService categoryService;
 
@@ -25,26 +25,27 @@ public class CategoryController {
     //CRUD operations for category
 
     @ApiMessage("Get all categories successfully")
-    @GetMapping
+    @GetMapping("/public/categories")
     public ResponseEntity<ResponsePagingResultDTO> getAllCategories(Pageable pageable) {
         return ResponseEntity.ok(categoryService.getAllCategories(pageable));
 
     }
 
     @ApiMessage("Get category by id successfully")
-    @GetMapping("/{id}")
+    @GetMapping("/public/categories/{id}")
     public ResponseEntity<Category> getCategoryById(@PathVariable int id) {
         return ResponseEntity.ok(categoryService.getCategoryById(id));
     }
 
-    @PostMapping
+    @PostMapping("/admin/categories")
     @ApiMessage("Category added successfully")
     public ResponseEntity<Category> addCategory(@Valid @RequestBody Category category) {
         return ResponseEntity.status(HttpStatus.CREATED).body(categoryService.createCategory(category));
     }
 
+
     @ApiMessage("Category updated successfully")
-    @PutMapping
+    @PutMapping("/admin/categories")
     public ResponseEntity<Category> updateCategory(@Valid @RequestBody Category category) {
         Category categoryDB = categoryService.getCategoryById(category.getId());
         if(categoryDB == null){
@@ -55,7 +56,7 @@ public class CategoryController {
     }
 
     @ApiMessage("Category deleted successfully")
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/admin/categories/{id}")
     public ResponseEntity<Category> deleteCategory(@PathVariable int id) {
         categoryService.deleteCategory(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);

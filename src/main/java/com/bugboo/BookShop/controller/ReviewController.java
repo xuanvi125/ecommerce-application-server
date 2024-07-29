@@ -15,7 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/reviews")
+@RequestMapping("/api/v1")
 public class ReviewController {
     private final ReviewService reviewService;
 
@@ -26,7 +26,7 @@ public class ReviewController {
 
     //CRUD operations for reviews
     // get all reviews
-    @GetMapping
+    @GetMapping("/public/reviews")
     @ApiMessage("Get all reviews successfully")
     public ResponseEntity<ResponsePagingResultDTO> getAllReviews(@Filter Specification<Review> specification, Pageable pageable) {
         return ResponseEntity.ok(reviewService.getAllReviews(specification,pageable));
@@ -34,7 +34,7 @@ public class ReviewController {
 
 
     // get review by id
-    @GetMapping("/{id}")
+    @GetMapping("/public/reviews/{id}")
     @ApiMessage("Get review by id successfully")
     public ResponseEntity<Review> getReviewById(@PathVariable int id) {
         return ResponseEntity.ok(reviewService.getReviewById(id));
@@ -42,21 +42,21 @@ public class ReviewController {
 
     // add review
     @ApiMessage("Add review successfully")
-    @PostMapping
+    @PostMapping("/users/reviews")
     public ResponseEntity<Review> addReview(@Valid @RequestBody  Review review) {
         return ResponseEntity.status(HttpStatus.CREATED).body(reviewService.addReview(review));
     }
 
     // update review
     @ApiMessage("Update review successfully")
-    @PutMapping
+    @PutMapping("/users/reviews")
     public ResponseEntity<Review> updateReview(@Valid @RequestBody  RequestUpdateReviewDTO reviewDTO) {
         return ResponseEntity.ok(reviewService.updateReview(reviewDTO));
     }
 
     // delete review
     @ApiMessage("Delete review successfully")
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/users/reviews/{id}")
     public ResponseEntity<Review> deleteReview(@PathVariable int id) {
         reviewService.deleteReview(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);

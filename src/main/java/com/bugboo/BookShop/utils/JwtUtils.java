@@ -46,7 +46,7 @@ public class JwtUtils {
                 .issuedAt(now)
                 .expiresAt(validity)
                 .subject(authentication.getName())
-                .claim("authorities", authorities)
+                .claim("authorities", authorities.isEmpty() ? "ROLE_USER" : authorities)
                 .build();
 
         JwsHeader jwsHeader = JwsHeader.with(JWT_ALGORITHM).build();

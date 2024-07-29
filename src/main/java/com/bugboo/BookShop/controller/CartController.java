@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/v1/carts")
+@RequestMapping("/api/v1")
 public class CartController {
     private final CartService cartService;
 
@@ -25,14 +25,14 @@ public class CartController {
 
     // handle get cart
     @ApiMessage("Get cart successfully")
-    @GetMapping
+    @GetMapping("/users/carts")
     public ResponseEntity<Cart> getCart() {
         Cart cart = cartService.getCart();
         return ResponseEntity.ok(cart);
     }
 
     // handle add cart items
-    @PostMapping
+    @PostMapping("/users/carts")
     @ApiMessage("Add cart items successfully")
     public ResponseEntity<Cart> addCartItems(@Valid @RequestBody RequestAddCartItemDTO requestAddCartItemDTO) {
         Cart cart = cartService.addCartItems(requestAddCartItemDTO);
@@ -40,21 +40,21 @@ public class CartController {
     }
 
     // handle delete cart items
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/users/carts/{id}")
     @ApiMessage("Delete cart items successfully")
     public ResponseEntity<Cart> deleteCartItems(@PathVariable int id) {
         Cart cart = cartService.deleteCartItems(id);
         return ResponseEntity.status(HttpStatus.OK).body(cart);
     }
 
-    @DeleteMapping
+    @DeleteMapping("/users/carts")
     @ApiMessage("Delete all cart items successfully")
     public ResponseEntity<Object> deleteAllCartItems() {
         cartService.empty();
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(Optional.empty());
     }
 
-    @PutMapping
+    @PutMapping("/users/carts")
     @ApiMessage("Update cart items successfully")
     public ResponseEntity<Cart> updateCartItems(@Valid @RequestBody RequestUpdateCartDTO requestUpdateCartDTO) {
         Cart cart = cartService.updateCartItems(requestUpdateCartDTO);

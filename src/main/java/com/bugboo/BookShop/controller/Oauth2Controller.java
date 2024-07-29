@@ -12,6 +12,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -28,13 +29,13 @@ public class Oauth2Controller {
     private final JwtUtils jwtUtils;
     private final UserService userService;
 
-    public Oauth2Controller(RoleRepository roleRepository, JwtUtils jwtUtils, UserService userService) {
+    public Oauth2Controller(RoleRepository roleRepository, JwtUtils jwtUtils, UserService userService, AuthenticationManagerBuilder authenticationManagerBuilder) {
         this.roleRepository = roleRepository;
         this.jwtUtils = jwtUtils;
         this.userService = userService;
     }
 
-    @GetMapping("/login/success")
+    @GetMapping("/public/login/success")
     public String loginSuccess(@AuthenticationPrincipal OAuth2User principal, HttpServletResponse response) {
         String name = principal.getAttribute("name");
         String email = principal.getAttribute("email");

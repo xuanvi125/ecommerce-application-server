@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/v1/statistics")
+@RequestMapping("/api/v1/admin/statistics")
 public class StatisticsController {
     private final StatisticService statisticService;
 
