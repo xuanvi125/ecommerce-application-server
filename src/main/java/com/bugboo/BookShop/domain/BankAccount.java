@@ -1,6 +1,7 @@
 package com.bugboo.BookShop.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
@@ -28,6 +29,6 @@ public class BankAccount {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    @JsonIgnore
+    @JsonIgnoreProperties("bankAccounts")
     private User user;
 }

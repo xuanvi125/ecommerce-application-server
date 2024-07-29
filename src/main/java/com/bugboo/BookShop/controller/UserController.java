@@ -5,16 +5,21 @@ import com.bugboo.BookShop.domain.User;
 import com.bugboo.BookShop.domain.dto.request.RequestCheckOutDTO;
 import com.bugboo.BookShop.domain.dto.request.RequestUpdatePasswordDTO;
 import com.bugboo.BookShop.domain.dto.request.RequestUpdateProfileDTO;
+import com.bugboo.BookShop.domain.dto.request.RequestUpdateUserDTO;
 import com.bugboo.BookShop.domain.dto.response.ResponseLoginDTO;
+import com.bugboo.BookShop.domain.dto.response.ResponsePagingResultDTO;
 import com.bugboo.BookShop.domain.dto.response.ResponseUserDTO;
 import com.bugboo.BookShop.service.FileUploadService;
 import com.bugboo.BookShop.service.OrderService;
 import com.bugboo.BookShop.service.UserService;
 import com.bugboo.BookShop.type.annotation.ApiMessage;
+import com.bugboo.BookShop.type.apiResponse.MetaData;
 import com.bugboo.BookShop.type.exception.AppException;
 import com.bugboo.BookShop.utils.JwtUtils;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -103,5 +108,24 @@ public class UserController {
         String email = this.jwtUtils.getCurrentUserLogin();
         User currentUser = userService.findByEmail(email);
         return ResponseEntity.ok(orderService.checkout(currentUser,requestCheckOutDTO));
+    }
+
+    @GetMapping
+    @ApiMessage("Get all users successfully")
+    public ResponseEntity<ResponsePagingResultDTO> getAllUsers(Pageable pageable) {
+        Page<User> users = userService.getAllUsers(pageable);
+        ResponsePagingResultDTO responsePagingResultDTO = new ResponsePagingResultDTO();
+        MetaData metaData = new MetaData();
+        metaData.setCurrentPage(users.getNumber() + 1);
+        metaData.setTotalPages(users.getTotalPages());
+        metaData.setTotalElements(users.getTotalElements());
+        responsePagingResultDTO.setMetadata(metaData);
+        responsePagingResultDTO.setResult(users.getContent());
+        return ResponseEntity.ok(responsePagingResultDTO);
+    }
+    @PutMapping
+    @ApiMessage("Update user successfully")
+    public ResponseEntity<User> updateUser(@Valid @RequestBody RequestUpdateUserDTO requestUpdateUserDTO){
+        return ResponseEntity.ok(userService.handleUpdateUser(requestUpdateUserDTO));
     }
 }

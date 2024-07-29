@@ -7,6 +7,7 @@ import com.bugboo.BookShop.repository.BankAccountRepository;
 import com.bugboo.BookShop.type.exception.AppException;
 import com.bugboo.BookShop.utils.JwtUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,9 +25,11 @@ public class BankAccountService {
         this.jwtUtils = jwtUtils;
     }
 
-    public List<BankAccount> getAllBankAccounts() {
+    public Object getAllBankAccounts(Pageable pageable) {
         String name = jwtUtils.getCurrentUserLogin();
         User user = userService.findByEmail(name);
+        if(user.getRole().getName().equals("ROLE_ADMIN"))
+            return bankAccountRepository.findAll(pageable);
         return bankAccountRepository.findByUser(user);
 
     }

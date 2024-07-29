@@ -9,6 +9,8 @@ import com.bugboo.BookShop.repository.CartRepository;
 import com.bugboo.BookShop.repository.OrderRepository;
 import com.bugboo.BookShop.type.exception.AppException;
 import jakarta.transaction.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -72,5 +74,10 @@ public class OrderService {
         orderRepository.save(order);
         order.setOrderDetails(orderDetails);
         return order;
+    }
+
+
+    public Page<Order> findAll(Pageable pageable) {
+        return orderRepository.findAll(pageable);
     }
 }

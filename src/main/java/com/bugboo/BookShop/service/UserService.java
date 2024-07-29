@@ -4,13 +4,18 @@ import com.bugboo.BookShop.domain.Order;
 import com.bugboo.BookShop.domain.User;
 import com.bugboo.BookShop.domain.dto.request.RequestCheckOutDTO;
 import com.bugboo.BookShop.domain.dto.request.RequestRegisterDTO;
+import com.bugboo.BookShop.domain.dto.request.RequestUpdateUserDTO;
 import com.bugboo.BookShop.domain.dto.response.ResponseUserDTO;
 import com.bugboo.BookShop.repository.UserRepository;
+import com.bugboo.BookShop.type.exception.AppException;
 import com.bugboo.BookShop.utils.JwtUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.List;
 
 @Service
 public class UserService {
@@ -60,4 +65,13 @@ public class UserService {
     }
 
 
+    public Page<User> getAllUsers(Pageable pageable) {
+        return userRepository.findAll(pageable);
+    }
+
+    public User handleUpdateUser(RequestUpdateUserDTO requestUpdateUserDTO) {
+        User user = userRepository.findById(requestUpdateUserDTO.getId()).orElseThrow(() -> new AppException("User not found",400));
+        user.setActive(requestUpdateUserDTO.isActive());
+        return userRepository.save(user);
+    }
 }

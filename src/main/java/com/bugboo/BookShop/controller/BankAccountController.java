@@ -6,6 +6,7 @@ import com.bugboo.BookShop.service.BankAccountService;
 import com.bugboo.BookShop.type.annotation.ApiMessage;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,8 +26,8 @@ public class BankAccountController {
 
     @GetMapping
     @ApiMessage("Bank accounts retrieved successfully")
-    public ResponseEntity<List<BankAccount>> getAllBankAccounts() {
-        return ResponseEntity.ok(bankAccountService.getAllBankAccounts());
+    public ResponseEntity<Object> getAllBankAccounts(Pageable pageable) {
+        return ResponseEntity.ok(bankAccountService.getAllBankAccounts(pageable));
     }
 
     @ApiMessage("Bank account added successfully")
