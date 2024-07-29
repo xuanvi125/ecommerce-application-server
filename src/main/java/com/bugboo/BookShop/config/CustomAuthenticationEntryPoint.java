@@ -15,7 +15,6 @@ import java.io.IOException;
 @Component
 public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint{
     private final AuthenticationEntryPoint delegate = new BearerTokenAuthenticationEntryPoint();
-
     private final ObjectMapper mapper;
 
     public CustomAuthenticationEntryPoint(ObjectMapper mapper) {
@@ -27,7 +26,11 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint{
         this.delegate.commence(request, response, authException);
         ErrorApiResponse errorResponse = new ErrorApiResponse();
         errorResponse.setStatus("fail");
-        errorResponse.setMessage("token is empty, invalid or expired");
+        errorResponse.setMessage("token is empty, invalid or expired. Please login again.");
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
         mapper.writeValue(response.getWriter(), errorResponse);
+
     }
 }

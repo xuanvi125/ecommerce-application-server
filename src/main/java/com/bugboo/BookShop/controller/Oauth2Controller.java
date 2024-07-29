@@ -43,7 +43,6 @@ public class Oauth2Controller {
         String googleId = principal.getAttribute("sub");
         User user = userService.findByEmailOrGoogleId(email, googleId);
         if(user!= null && !user.isActive()){
-
             return "redirect:" + ConfigUtils.CLIENT_URL + "/login?error=Account is banned, contact admin for more information";
         }
 

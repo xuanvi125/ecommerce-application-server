@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
+import java.nio.file.AccessDeniedException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,6 +46,14 @@ public class ControllerAdvice {
         response.setStatus("fail");
         response.setMessage(String.join(". ", errors));
         return ResponseEntity.badRequest().body(response);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    ResponseEntity<ErrorApiResponse> handleAccessDeniedException(AccessDeniedException e){
+        ErrorApiResponse response = new ErrorApiResponse();
+        response.setStatus("fail");
+        response.setMessage("You do not have permission to access this resource");
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
     }
 
     @ExceptionHandler(BadCredentialsException.class)
