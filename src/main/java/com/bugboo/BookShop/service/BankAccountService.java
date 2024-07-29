@@ -3,6 +3,7 @@ package com.bugboo.BookShop.service;
 import com.bugboo.BookShop.domain.BankAccount;
 import com.bugboo.BookShop.domain.User;
 import com.bugboo.BookShop.domain.dto.request.RequestAddBankAccountDTO;
+import com.bugboo.BookShop.domain.dto.request.RequestUpdateBankAccount;
 import com.bugboo.BookShop.repository.BankAccountRepository;
 import com.bugboo.BookShop.type.exception.AppException;
 import com.bugboo.BookShop.utils.JwtUtils;
@@ -53,6 +54,14 @@ public class BankAccountService {
     public void deleteBankAccount(Long id) {
         BankAccount bankAccount = bankAccountRepository.findById(id).orElseThrow(() -> new AppException("Bank account not found",400));
 
+        String name = jwtUtils.getCurrentUserLogin();
+        User user = userService.findByEmail(name);
+        if(user.getRole().getName().equals("ROLE_ADMIN")){
+            bankAccountRepository.delete(bankAccount);
+            return;
+        }
+
+
         if (!isBankAccountBelongsToUser(bankAccount)) {
             throw new AppException("Bank account not belongs to user",403);
         }
@@ -71,5 +80,15 @@ public class BankAccountService {
 
     public void save(BankAccount bankAccount) {
         bankAccountRepository.save(bankAccount);
+    }
+
+    public BankAccount getBankAccountById(Long id) {
+        return bankAccountRepository.findById(id).orElseThrow(() -> new AppException("Bank account not found",400));
+    }
+
+    public BankAccount updateBankAccount(RequestUpdateBankAccount requestUpdateBankAccount) {
+        BankAccount bankAccount = bankAccountRepository.findById((long) requestUpdateBankAccount.getId()).orElseThrow(() -> new AppException("Bank account not found",400));
+        bankAccount.setBalance(requestUpdateBankAccount.getBalance());
+        return bankAccountRepository.save(bankAccount);
     }
 }

@@ -1,5 +1,6 @@
 package com.bugboo.BookShop.domain;
 
+import com.bugboo.BookShop.type.constant.ConfigUtils;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
@@ -27,7 +28,7 @@ public class User {
 
     @JsonIgnore
     private String password;
-    private String avatar = "https://res.cloudinary.com/dv79err1w/image/upload/v1705827741/user/vettp93pj5cmz5ecdraf.jpg";
+    private String avatar = ConfigUtils.DEFAULT_USER_AVATAR;
     private boolean active = true;
 
     @OneToMany(mappedBy = "user")

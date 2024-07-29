@@ -44,9 +44,17 @@ public class AuthService {
 
     @Transactional
     public Authentication login(RequestLoginDTO requestLoginDTO){
+        if(isUnActiveUser(requestLoginDTO.getEmail())){
+            throw new AppException("User is banned, contact admin for more info",400);
+        }
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(requestLoginDTO.getEmail(), requestLoginDTO.getPassword());
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
         SecurityContextHolder.getContext().setAuthentication(authentication);
        return authentication;
+    }
+
+    boolean isUnActiveUser(String email){
+        User user = userService.findByEmail(email);
+        return !user.isActive();
     }
 }

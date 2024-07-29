@@ -2,6 +2,7 @@ package com.bugboo.BookShop.service;
 
 import com.bugboo.BookShop.domain.*;
 import com.bugboo.BookShop.domain.dto.request.RequestCheckOutDTO;
+import com.bugboo.BookShop.domain.dto.request.RequestUpdateOrder;
 import com.bugboo.BookShop.domain.key.OrderDetailsId;
 import com.bugboo.BookShop.repository.BankAccountRepository;
 import com.bugboo.BookShop.repository.CartDetailsRepository;
@@ -79,5 +80,16 @@ public class OrderService {
 
     public Page<Order> findAll(Pageable pageable) {
         return orderRepository.findAll(pageable);
+    }
+
+    public Order findById(int id) {
+        return orderRepository.findById(id).orElseThrow(() -> new AppException("Order not found",404));
+    }
+
+    public Order updateOrder(RequestUpdateOrder requestUpdateOrder) {
+        Order order = orderRepository.findById(requestUpdateOrder.getId()).orElseThrow(() -> new AppException("Order not found",400));
+        order.setStatus(requestUpdateOrder.getStatus());
+        order.setAddress(requestUpdateOrder.getAddress());
+        return orderRepository.save(order);
     }
 }

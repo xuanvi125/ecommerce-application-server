@@ -2,6 +2,7 @@ package com.bugboo.BookShop.controller;
 
 import com.bugboo.BookShop.domain.BankAccount;
 import com.bugboo.BookShop.domain.dto.request.RequestAddBankAccountDTO;
+import com.bugboo.BookShop.domain.dto.request.RequestUpdateBankAccount;
 import com.bugboo.BookShop.service.BankAccountService;
 import com.bugboo.BookShop.type.annotation.ApiMessage;
 import jakarta.validation.Valid;
@@ -42,4 +43,17 @@ public class BankAccountController {
         bankAccountService.deleteBankAccount(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(Optional.empty());
     }
+
+    @ApiMessage("Get bank account by id successfully")
+    @GetMapping("/{id}")
+    public ResponseEntity<BankAccount> getBankAccountById(@PathVariable Long id) {
+        return ResponseEntity.ok(bankAccountService.getBankAccountById(id));
+    }
+
+    @ApiMessage("update bank account successfully")
+    @PutMapping
+    public ResponseEntity<BankAccount> updateBankAccount(@Valid @RequestBody RequestUpdateBankAccount requestUpdateBankAccount) {
+        return ResponseEntity.ok(bankAccountService.updateBankAccount(requestUpdateBankAccount));
+    }
+
 }

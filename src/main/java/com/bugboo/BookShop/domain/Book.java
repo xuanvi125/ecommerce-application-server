@@ -1,5 +1,6 @@
 package com.bugboo.BookShop.domain;
 
+import com.bugboo.BookShop.type.constant.ConfigUtils;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
@@ -40,7 +41,7 @@ public class Book {
     private int inventory = 100;
 
 
-    private String image = "https://res.cloudinary.com/dv79err1w/image/upload/v1705988154/product/efwphbwmbnlwqbhau7pz.png";
+    private String image = ConfigUtils.DEFAULT_BOOK_COVER;
 
     private String description = "No description";
     private String publisher = "No publisher";
