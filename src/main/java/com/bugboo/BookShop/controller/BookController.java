@@ -41,7 +41,7 @@ public class BookController {
 
     // get book by id
     @ApiMessage("Get book by id successfully")
-    @GetMapping("/public/{id}")
+    @GetMapping("/public/books/{id}")
     public ResponseEntity<Book> getBookById(@PathVariable  int id) {
         return ResponseEntity.ok(bookService.getBookById(id));
     }

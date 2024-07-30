@@ -5,6 +5,7 @@ import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring6.SpringTemplateEngine;
@@ -21,6 +22,7 @@ public class SendEmailService {
         this.templateEngine = templateEngine;
     }
 
+    @Async
     public void sendEmailWithTemplate(String to, String subject, String htmlBody) throws MessagingException {
         MimeMessage message = emailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
@@ -31,6 +33,7 @@ public class SendEmailService {
     }
 
 
+    @Async
     public void sendEmailWithThymeleafTemplate(String to, String subject , Map<String,String> data) throws MessagingException {
         Context context = new Context();
         context.setVariable("url",data.get("link"));

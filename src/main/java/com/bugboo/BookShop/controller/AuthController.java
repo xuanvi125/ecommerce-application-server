@@ -149,7 +149,7 @@ public class AuthController {
     }
 
     @PostMapping("/forgot-password")
-    @ApiMessage("Send email to reset password successfully")
+    @ApiMessage("Send email to reset password successfully. Please check your email")
     public ResponseEntity<?> handleForgotPassword(@RequestBody Map<String,String> body, HttpServletRequest request) throws MessagingException, NoSuchAlgorithmException {
         String email = body.get("email");
         if (body.get("email") == null){
